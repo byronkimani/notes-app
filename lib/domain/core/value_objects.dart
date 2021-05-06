@@ -7,6 +7,7 @@ import 'package:notes/domain/core/failures.dart';
 @immutable
 abstract class ValueObject<T> {
   const ValueObject();
+
   Either<ValueFailure<T>, T> get value;
 
   /// returns the value or throws [UnexpectedValueError] containing the [ValueFailure]

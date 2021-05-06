@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:dartz/dartz.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:injectable/injectable.dart';
 import 'package:notes/domain/auth/auth_failure.dart';
 import 'package:notes/domain/auth/i_auth_facade.dart';
 import 'package:notes/domain/auth/value_objects.dart';
@@ -11,6 +12,7 @@ part 'sign_in_form_event.dart';
 part 'sign_in_form_state.dart';
 part 'sign_in_form_bloc.freezed.dart';
 
+@injectable
 class SignInFormBloc extends Bloc<SignInFormEvent, SignInFormState> {
   final IAuthFacade _authFacade;
 
@@ -22,7 +24,7 @@ class SignInFormBloc extends Bloc<SignInFormEvent, SignInFormState> {
   ) async* {
     yield* event.map(
       // event to emit when email is changed
-      emailChanged: (e) async* {
+      emailChanged: (Emailchanged e) async* {
         yield state.copyWith(
           emailAddress: EmailAddress(e.emailStr),
           authFailureOrSuccessOption: none(),
@@ -30,7 +32,7 @@ class SignInFormBloc extends Bloc<SignInFormEvent, SignInFormState> {
       },
 
       // event to emit when password is changed
-      passwordChanged: (e) async* {
+      passwordChanged: (PasswordChanged e) async* {
         yield state.copyWith(
           password: Password(e.passStr),
           authFailureOrSuccessOption: none(),
@@ -55,7 +57,7 @@ class SignInFormBloc extends Bloc<SignInFormEvent, SignInFormState> {
           isSubmitting: true,
           authFailureOrSuccessOption: none(),
         );
-        final failureOrSuccess = await _authFacade.signInWithGoogle();
+        final Either<AuthFailure, Unit> failureOrSuccess = await _authFacade.signInWithGoogle();
         yield state.copyWith(
           isSubmitting: false,
           authFailureOrSuccessOption: some(failureOrSuccess),
